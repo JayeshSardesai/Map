@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Medicine Quantity Alert</title>
+        <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .email-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    .header {
+      background-color: #007bff;
+      color: white;
+      position: relative;
+      height: 120px; /* Increased header height */
+      padding: 0 20px;
+    }
+
+    .logo {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .logo img {
+      max-width: 100px;
+      height: auto;
+    }
+
+    .heading-text {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 30px; /* Increased font size */
+      font-weight: bold;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .content {
+      padding: 30px;
+      color: #333333;
+    }
+
+    .button {
+      display: inline-block;
+      background-color: #007bff;
+      color: white;
+      padding: 12px 20px;
+      margin-top: 20px;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 13px;
+      color: #888888;
+      padding: 20px;
+    }
+  </style>
+    </head>
+    <body>
+        <div class="email-container">
+
+            <!-- Header with taller height and centered heading -->
+            <div class="header">
+                <div class="logo">
+                    <img
+                        src="https://i.ibb.co/9HCCgHYC/logo-removebg-preview-removebg-preview.png "
+                        alt="HealthCare Logo">
+                </div>
+                <div class="heading-text">⏳ Medicine Alert</div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <p>Dear [User's Name],</p>
+                <p>We wanted to inform you that your supply of <strong>[Medicine
+                        Name]</strong> is running low.</p>
+                <p>According to our records, you have only <strong>[X]
+                        doses</strong> remaining. To avoid interruption in your
+                    treatment, please consider refilling your prescription at
+                    the earliest.</p>
+
+                <a href="[Refill_Link]" class="button">Refill Now</a>
+
+                <p>If you’ve already taken action, please ignore this
+                    message.</p>
+
+                <p>Stay healthy,<br><strong>Your Healthcare Team</strong></p>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                &copy; 2025 HealthCare Inc. | This is an automated message,
+                please do not reply.
+            </div>
+
+        </div>
+    </body>
+</html>

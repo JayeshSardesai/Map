@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Medical Order Dashboard</title>
+        <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+            rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --color-primary: #6366f1;
+            --color-danger: #ef4444;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-white: #1e293b;
+            --color-info: #94a3b8;
+            --color-dark: #f8fafc;
+            --color-light: rgba(255,255,255,0.1);
+            --color-dark-varient: #cbd5e1;
+            --color-background: #0f172a;
+            
+            --card-border-radius: 0.5rem;
+            --border-radius-1: 0.4rem;
+            --border-radius-2: 0.8rem;
+
+            --card-padding: 1.2rem;
+            --box-shadow: 0 1rem 2rem rgba(0,0,0,0.3);
+            --transition: all 300ms ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+            list-style: none;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 14px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-size: .88rem;
+            background: var(--color-background);
+            user-select: none;
+            overflow-x: hidden;
+            color: var(--color-dark);
+            transition: var(--transition);
+        }
+
+        /* Header styles */
+        header {
+            position: fixed;
+            width: 100vw;
+            z-index: 1000;
+            background-color: var(--color-white);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        header .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        header .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        /* Main container */
+        .container {
+            padding: 6rem 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Dashboard header */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--color-white);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-1);
+            box-shadow: var(--box-shadow);
+            width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            padding: 0.5rem;
+            background: transparent;
+            color: var(--color-dark);
+        }
+
+        .search-bar span {
+            color: var(--color-info);
+        }
+
+        /* Orders table */
+        .orders-table {
+            background: var(--color-white);
+            border-radius: var(--card-border-radius);
+            padding: var(--card-padding);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            overflow-x: auto;
+        }
+
+        .orders-table:hover {
+            box-shadow: 0 1rem 2rem rgba(0,0,0,0.4);
+        }
+
+        .orders-table table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .orders-table th, .orders-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--color-light);
+        }
+
+        .orders-table th {
+            font-weight: 600;
+            color: var(--color-dark);
+        }
+
+        .orders-table td {
+            color: var(--color-dark-varient);
+        }
+
+        .orders-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .orders-table tr:hover td {
+            background: var(--color-light);
+        }
+
+        /* Status badges */
+        .status {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: var(--border-radius-1);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: rgba(234, 179, 8, 0.2);
+            color: #facc15;
+        }
+
+        .status-processing {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .status-delivered {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        /* Action buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-1);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--color-success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-disabled {
+            background: var(--color-light);
+            color: var(--color-info);
+            cursor: not-allowed;
+        }
+
+        /* Loading screen */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-circle {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--color-light);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive styles */
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 5rem 1rem 1rem;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .search-bar {
+                width: 100%;
+            }
+            
+            .orders-table {
+                padding: 0.5rem;
+            }
+            
+            .orders-table th, 
+            .orders-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+    </head>
+    <body>
+        <div class="loading">
+            <div class="loading-circle"></div>
+        </div>
+
+        <header>
+            <div class="logo">
+                <h1>Medical Order Dashboard</h1>
+            </div>
+            <div class="user-menu">
+                <span class="material-icons-sharp">account_circle</span>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>Order Management</h1>
+                <div class="search-bar">
+                    <span class="material-icons-sharp">search</span>
+                    <input type="text" id="orderSearch"
+                        placeholder="Search orders...">
+                </div>
+            </div>
+
+            <div class="orders-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Patient Name</th>
+                            <th>Medication</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-body">
+                        <!-- Orders will be loaded here -->
+                        <tr>
+                            <td>ORD-1001</td>
+                            <td>Abhishek Khot</td>
+                            <td>Paracetamol 500mg</td>
+                            <td>30 tablets</td>
+                            <td><span
+                                    class="status status-pending">Pending</span></td>
+                            <td>
+                                <button class="btn btn-primary"
+                                    onclick="processOrder('ORD-1001')">
+                                    <span
+                                        class="material-icons-sharp">check_circle</span>
+                                    Process
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ORD-1002</td>
+                            <td>Jayesh Sardesai</td>
+                            <td>Amoxicillin 250mg</td>
+                            <td>20 capsules</td>
+                            <td><span
+                                    class="status status-processing">Processing</span></td>
+                            <td>
+                                <button class="btn btn-success"
+                                    onclick="completeOrder('ORD-1002')">
+                                    <span
+                                        class="material-icons-sharp">local_shipping</span>
+                                    Deliver
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ORD-1003</td>
+                            <td>Rahul Sharma</td>
+                            <td>Ibuprofen 400mg</td>
+                            <td>15 tablets</td>
+                            <td><span
+                                    class="status status-delivered">Delivered</span></td>
+                            <td>
+                                <button class="btn btn-disabled">
+                                    <span
+                                        class="material-icons-sharp">done_all</span>
+                                    Completed
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ORD-1004</td>
+                            <td>Priya Patel</td>
+                            <td>Cetirizine 10mg</td>
+                            <td>25 tablets</td>
+                            <td><span
+                                    class="status status-pending">Pending</span></td>
+                            <td>
+                                <button class="btn btn-primary"
+                                    onclick="processOrder('ORD-1004')">
+                                    <span
+                                        class="material-icons-sharp">check_circle</span>
+                                    Process
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ORD-1005</td>
+                            <td>Neha Gupta</td>
+                            <td>Omeprazole 20mg</td>
+                            <td>14 capsules</td>
+                            <td><span
+                                    class="status status-processing">Processing</span></td>
+                            <td>
+                                <button class="btn btn-success"
+                                    onclick="completeOrder('ORD-1005')">
+                                    <span
+                                        class="material-icons-sharp">local_shipping</span>
+                                    Deliver
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+        // Hide loading screen and show content
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.querySelector('.loading').style.opacity = '0';
+                setTimeout(function() {
+                    document.querySelector('.loading').style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // Mock data for orders
+        const mockOrders = [
+            {
+                id: 'ORD-1001',
+                patient: 'Abhishek Khot',
+                medication: 'Paracetamol 500mg',
+                quantity: '30 tablets',
+                status: 'pending'
+            },
+            {
+                id: 'ORD-1002',
+                patient: 'Jayesh Sardesai',
+                medication: 'Amoxicillin 250mg',
+                quantity: '20 capsules',
+                status: 'processing'
+            },
+            {
+                id: 'ORD-1003',
+                patient: 'Rahul Sharma',
+                medication: 'Ibuprofen 400mg',
+                quantity: '15 tablets',
+                status: 'delivered'
+            },
+            {
+                id: 'ORD-1004',
+                patient: 'Priya Patel',
+                medication: 'Cetirizine 10mg',
+                quantity: '25 tablets',
+                status: 'pending'
+            },
+            {
+                id: 'ORD-1005',
+                patient: 'Neha Gupta',
+                medication: 'Omeprazole 20mg',
+                quantity: '14 capsules',
+                status: 'processing'
+            }
+        ];
+
+        // Function to process an order
+        function processOrder(orderId) {
+            const order = mockOrders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'processing';
+                renderOrders();
+                alert(`Order ${orderId} is now being processed`);
+            }
+        }
+
+        // Function to complete an order
+        function completeOrder(orderId) {
+            const order = mockOrders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'delivered';
+                renderOrders();
+                alert(`Order ${orderId} has been marked as delivered`);
+            }
+        }
+
+        // Function to render orders table
+        function renderOrders() {
+            const tbody = document.getElementById("orders-body");
+            tbody.innerHTML = "";
+
+            mockOrders.forEach(order => {
+                const row = document.createElement("tr");
+                
+                // Status badge
+                let statusBadge;
+                if (order.status === 'pending') {
+                    statusBadge = '<span class="status status-pending">Pending</span>';
+                } else if (order.status === 'processing') {
+                    statusBadge = '<span class="status status-processing">Processing</span>';
+                } else {
+                    statusBadge = '<span class="status status-delivered">Delivered</span>';
+                }
+
+                // Action button
+                let actionButton;
+                if (order.status === 'pending') {
+                    actionButton = `
+                        <button class="btn btn-primary" onclick="processOrder('${order.id}')">
+                            <span class="material-icons-sharp">check_circle</span>
+                            Process
+                        </button>
+                    `;
+                } else if (order.status === 'processing') {
+                    actionButton = `
+                        <button class="btn btn-success" onclick="completeOrder('${order.id}')">
+                            <span class="material-icons-sharp">local_shipping</span>
+                            Deliver
+                        </button>
+                    `;
+                } else {
+                    actionButton = `
+                        <button class="btn btn-disabled">
+                            <span class="material-icons-sharp">done_all</span>
+                            Completed
+                        </button>
+                    `;
+                }
+
+                row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.patient}</td>
+                    <td>${order.medication}</td>
+                    <td>${order.quantity}</td>
+                    <td>${statusBadge}</td>
+                    <td>${actionButton}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener("DOMContentLoaded", function() {
+            renderOrders();
+            
+            // Search functionality
+            document.getElementById("orderSearch").addEventListener("input", function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll("#orders-body tr");
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            });
+        });
+    </script>
+    </body>
+</html>

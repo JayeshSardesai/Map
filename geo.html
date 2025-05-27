@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical Facility Locator</title>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Campus Facility Locator</title>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet">
+        <style>
         /* Dark theme base for the page (excluding map) */
         body {
             margin: 0;
@@ -63,6 +65,10 @@
             min-width: 150px;
             text-align: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         button:hover:not(:disabled) {
@@ -114,8 +120,64 @@
 
         /* Map container - standard Google Maps colors */
         #map {
-            height: 70vh;
+            height: 65vh;
             width: 100%;
+            background: white; /* Ensure map background is white */
+        }
+
+        /* Facility selector dropdown */
+        #facility-selector {
+            display: none;
+            background: #1e1e1e;
+            padding: 12px;
+            border-bottom: 1px solid #333;
+        }
+
+        .category {
+            margin-bottom: 15px;
+        }
+
+        .category-title {
+            color: #bb86fc;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .category-title .material-icons {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .facility-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+            padding-left: 28px;
+        }
+
+        .facility-option {
+            padding: 8px 12px;
+            background: #2a2a2a;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .facility-option:hover {
+            background: #333;
+            transform: translateX(2px);
+        }
+
+        .facility-option .material-icons {
+            font-size: 18px;
+            color: #bb86fc;
         }
 
         /* Facility list styles for dark theme */
@@ -135,6 +197,9 @@
             border-bottom: 1px solid #333;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .facility-item:hover {
@@ -142,9 +207,22 @@
             color: #ffffff;
         }
 
+        .facility-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bb86fc;
+        }
+
+        .facility-details {
+            flex: 1;
+        }
+
         .facility-name {
             font-weight: 700;
-            color: #bb86fc; /* Purple accent color */
+            color: #bb86fc;
             font-size: 1.1rem;
             user-select: text;
         }
@@ -156,75 +234,223 @@
             user-select: text;
         }
 
-        /* Scrollbar styling */
-        #facility-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        #facility-list::-webkit-scrollbar-track {
-            background: #1e1e1e;
-        }
-
-        #facility-list::-webkit-scrollbar-thumb {
-            background: #4a148c;
+        .facility-type {
+            font-size: 0.75rem;
+            background: #333;
+            padding: 2px 6px;
             border-radius: 4px;
-        }
-
-        #facility-list::-webkit-scrollbar-thumb:hover {
-            background: #7b1fa2;
+            color: #ddd;
         }
 
         /* Directions panel */
         #directions-panel {
             background: #1e1e1e;
-            padding: 10px;
+            padding: 15px;
             overflow: auto;
             max-height: 200px;
             display: none;
             border-top: 1px solid #333;
             color: #e0e0e0;
         }
-        #directions-panel {
-    color: #e0e0e0;
-}
 
-#directions-panel h3 {
-    color: #bb86fc;
-}
+        #directions-panel h3 {
+            color: #bb86fc;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-#directions-panel * {
-    color: #e0e0e0 !important;
-    background-color: transparent !important;
-}
+        #directions-panel * {
+            color: #e0e0e0 !important;
+            background-color: transparent !important;
+        }
 
+        .adp-placemark {
+            border-left: 3px solid #bb86fc !important;
+        }
+
+        /* Scrollbar styling */
+        #facility-list::-webkit-scrollbar,
+        #directions-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #facility-list::-webkit-scrollbar-track,
+        #directions-panel::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        #facility-list::-webkit-scrollbar-thumb,
+        #directions-panel::-webkit-scrollbar-thumb {
+            background: #4a148c;
+            border-radius: 4px;
+        }
+
+        #facility-list::-webkit-scrollbar-thumb:hover,
+        #directions-panel::-webkit-scrollbar-thumb:hover {
+            background: #7b1fa2;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            #controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .facility-options {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <div id="header">
-      <h1>Medical Facility Locator</h1>
-      <p>Find the nearest medical facilities and get directions</p>
-    </div>
+    </head>
+    <body>
+        <div id="header">
+            <h1>Campus Facility Locator</h1>
+            <p>Find nearby facilities and get directions within the campus</p>
+        </div>
 
-    <div id="controls">
-      <button id="find-btn">
-        <span class="loading" id="loading-spinner"
-          style="display: none;"></span>
-        Find Nearby Facilities
-      </button>
-      <button id="clear-btn" disabled>Clear Results</button>
-    </div>
+        <div id="controls">
+            <button id="find-btn">
+                <span class="loading" id="loading-spinner"
+                    style="display: none;"></span>
+                <i class="material-icons">location_searching</i>
+                Find Nearby Facilities
+            </button>
+            <button id="clear-btn" disabled>
+                <i class="material-icons">clear</i>
+                Clear Results
+            </button>
+        </div>
 
-    <div id="status">Click "Find Nearby Facilities" to get started.</div>
+        <div id="status">Click "Find Nearby Facilities" to get started.</div>
 
-    <div id="map"></div>
+        <div id="facility-selector">
+            <div class="category">
+                <div class="category-title">
+                    <i class="material-icons">local_hospital</i>
+                    Medical Facilities
+                </div>
+                <div class="facility-options">
+                    <div class="facility-option" data-type="hospital">
+                        <i class="material-icons">local_hospital</i>
+                        Hospitals
+                    </div>
+                    <div class="facility-option" data-type="pharmacy">
+                        <i class="material-icons">local_pharmacy</i>
+                        Pharmacies
+                    </div>
+                    <div class="facility-option" data-type="clinic">
+                        <i class="material-icons">medical_services</i>
+                        Clinics
+                    </div>
+                </div>
+            </div>
 
-    <div id="facility-list"></div>
-    <div id="directions-panel"></div>
+            <div class="category">
+                <div class="category-title">
+                    <i class="material-icons">school</i>
+                    Academic Facilities
+                </div>
+                <div class="facility-options">
+                    <div class="facility-option" data-type="library">
+                        <i class="material-icons">local_library</i>
+                        Library
+                    </div>
+                    <div class="facility-option" data-type="department">
+                        <i class="material-icons">business</i>
+                        Departments
+                    </div>
+                    <div class="facility-option" data-type="auditorium">
+                        <i class="material-icons">theaters</i>
+                        Auditorium
+                    </div>
+                    <div class="facility-option" data-type="lab">
+                        <i class="material-icons">science</i>
+                        Laboratories
+                    </div>
+                </div>
+            </div>
 
-    <script>
+            <div class="category">
+                <div class="category-title">
+                    <i class="material-icons">directions_bus</i>
+                    Transportation
+                </div>
+                <div class="facility-options">
+                    <div class="facility-option" data-type="busstop">
+                        <i class="material-icons">directions_bus</i>
+                        Bus Stops
+                    </div>
+                    <div class="facility-option" data-type="busstand">
+                        <i class="material-icons">departure_board</i>
+                        Bus Stand
+                    </div>
+                    <div class="facility-option" data-type="parking">
+                        <i class="material-icons">local_parking</i>
+                        Parking
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <div class="category-title">
+                    <i class="material-icons">restaurant</i>
+                    Food & Dining
+                </div>
+                <div class="facility-options">
+                    <div class="facility-option" data-type="canteen">
+                        <i class="material-icons">restaurant</i>
+                        Canteen
+                    </div>
+                    <div class="facility-option" data-type="mess">
+                        <i class="material-icons">fastfood</i>
+                        Mess
+                    </div>
+                    <div class="facility-option" data-type="cafe">
+                        <i class="material-icons">local_cafe</i>
+                        Cafeteria
+                    </div>
+                </div>
+            </div>
+
+            <div class="category">
+                <div class="category-title">
+                    <i class="material-icons">sports_soccer</i>
+                    Sports & Recreation
+                </div>
+                <div class="facility-options">
+                    <div class="facility-option" data-type="playground">
+                        <i class="material-icons">sports_soccer</i>
+                        Playground
+                    </div>
+                    <div class="facility-option" data-type="gym">
+                        <i class="material-icons">fitness_center</i>
+                        Gymnasium
+                    </div>
+                    <div class="facility-option" data-type="sportscomplex">
+                        <i class="material-icons">sports_volleyball</i>
+                        Sports Complex
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="map"></div>
+
+        <div id="facility-list"></div>
+        <div id="directions-panel"></div>
+
+        <script>
         let map, userMarker, facilityMarkers = [];
         let directionsService, directionsRenderer;
         let userLocation = null;
+        let selectedFacilityType = null;
 
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
@@ -235,6 +461,7 @@
                 mapTypeControl: true,
                 streetViewControl: false,
                 fullscreenControl: true
+                // Removed the custom map styles to use default light theme
             });
 
             // Initialize directions service and renderer
@@ -259,12 +486,26 @@
             const clearBtn = document.getElementById("clear-btn");
             const status = document.getElementById("status");
             const facilityList = document.getElementById("facility-list");
+            const facilitySelector = document.getElementById("facility-selector");
             const loadingSpinner = document.getElementById("loading-spinner");
             const directionsPanel = document.getElementById("directions-panel");
+            const facilityOptions = document.querySelectorAll('.facility-option');
+
+            // Add click handlers for facility options
+            facilityOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    selectedFacilityType = this.getAttribute('data-type');
+                    if (userLocation) {
+                        findNearbyFacilities(userLocation, selectedFacilityType);
+                    }
+                });
+            });
 
             findBtn.onclick = () => {
                 loadingSpinner.style.display = "inline-block";
                 status.textContent = "Locating your position...";
+                facilitySelector.style.display = "none";
+                
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(position => {
                         userLocation = {
@@ -272,7 +513,7 @@
                             lng: position.coords.longitude,
                         };
                         map.setCenter(userLocation);
-                        map.setZoom(15);
+                        map.setZoom(16);
 
                         // Place or move user marker
                         if (!userMarker) {
@@ -282,10 +523,10 @@
                                 title: "Your Location",
                                 icon: {
                                     path: google.maps.SymbolPath.CIRCLE,
-                                    scale: 8,
+                                    scale: 10,
                                     fillColor: "#7b1fa2",
-                                    fillOpacity: 0.8,
-                                    strokeWeight: 2,
+                                    fillOpacity: 0.9,
+                                    strokeWeight: 3,
                                     strokeColor: "#fff"
                                 }
                             });
@@ -293,21 +534,71 @@
                             userMarker.setPosition(userLocation);
                         }
 
-                        status.textContent = "Searching for nearby medical facilities...";
-                        findNearbyFacilities(userLocation);
+                        status.textContent = "Select a facility type from the dropdown";
+                        facilitySelector.style.display = "block";
                         findBtn.disabled = true;
                         clearBtn.disabled = false;
                         loadingSpinner.style.display = "none";
                     }, error => {
-                        status.textContent = "Geolocation failed or denied.";
+                        status.textContent = "Geolocation failed or denied. Using default location.";
                         loadingSpinner.style.display = "none";
+                        
+                        // Fallback to a default location (example: IIT Bombay)
+                        userLocation = { lat: 19.1334, lng: 72.9133 };
+                        map.setCenter(userLocation);
+                        map.setZoom(16);
+                        
+                        if (!userMarker) {
+                            userMarker = new google.maps.Marker({
+                                position: userLocation,
+                                map: map,
+                                title: "Default Location",
+                                icon: {
+                                    path: google.maps.SymbolPath.CIRCLE,
+                                    scale: 10,
+                                    fillColor: "#7b1fa2",
+                                    fillOpacity: 0.9,
+                                    strokeWeight: 3,
+                                    strokeColor: "#fff"
+                                }
+                            });
+                        }
+                        
+                        facilitySelector.style.display = "block";
+                        findBtn.disabled = true;
+                        clearBtn.disabled = false;
                     }, {
                         enableHighAccuracy: true,
                         timeout: 10000
                     });
                 } else {
-                    status.textContent = "Geolocation is not supported by this browser.";
+                    status.textContent = "Geolocation is not supported by this browser. Using default location.";
                     loadingSpinner.style.display = "none";
+                    
+                    // Fallback to a default location
+                    userLocation = { lat: 19.1334, lng: 72.9133 };
+                    map.setCenter(userLocation);
+                    map.setZoom(16);
+                    
+                    if (!userMarker) {
+                        userMarker = new google.maps.Marker({
+                            position: userLocation,
+                            map: map,
+                            title: "Default Location",
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                scale: 10,
+                                fillColor: "#7b1fa2",
+                                fillOpacity: 0.9,
+                                strokeWeight: 3,
+                                strokeColor: "#fff"
+                            }
+                        });
+                    }
+                    
+                    facilitySelector.style.display = "block";
+                    findBtn.disabled = true;
+                    clearBtn.disabled = false;
                 }
             };
 
@@ -328,44 +619,122 @@
 
                 facilityList.style.display = "none";
                 facilityList.innerHTML = "";
+                facilitySelector.style.display = "none";
                 status.textContent = "Results cleared. Click 'Find Nearby Facilities' to start again.";
                 findBtn.disabled = false;
                 clearBtn.disabled = true;
                 userLocation = null;
+                selectedFacilityType = null;
             };
 
-            function findNearbyFacilities(location) {
-                // Sample medical facilities data
-                const medicalFacilities = [
-                    {
-                        name: "City General Hospital",
-                        lat: location.lat + 0.005,
-                        lng: location.lng + 0.005,
-                        type: "hospital",
-                        description: "24/7 emergency services available"
-                    },
-                    {
-                        name: "University Medical Center",
-                        lat: location.lat - 0.004,
-                        lng: location.lng + 0.007,
-                        type: "hospital",
-                        description: "Specialized in student health services"
-                    },
-                    {
-                        name: "Campus Pharmacy",
-                        lat: location.lat + 0.008,
-                        lng: location.lng - 0.006,
-                        type: "pharmacy",
-                        description: "Prescription and over-the-counter medications"
-                    },
-                    {
-                        name: "Community Health Clinic",
-                        lat: location.lat - 0.007,
-                        lng: location.lng - 0.008,
-                        type: "clinic",
-                        description: "Primary care and vaccinations"
-                    }
-                ];
+            function getIconForFacilityType(type) {
+                const icons = {
+                    'hospital': { url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png', color: '#ff5252' },
+                    'pharmacy': { url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png', color: '#4caf50' },
+                    'clinic': { url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', color: '#2196f3' },
+                    'library': { url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', color: '#2196f3' },
+                    'department': { url: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png', color: '#ffeb3b' },
+                    'auditorium': { url: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png', color: '#9c27b0' },
+                    'lab': { url: 'http://maps.google.com/mapfiles/ms/icons/ltblue-dot.png', color: '#00bcd4' },
+                    'busstop': { url: 'http://maps.google.com/mapfiles/ms/icons/orange-dot.png', color: '#ff9800' },
+                    'busstand': { url: 'http://maps.google.com/mapfiles/ms/icons/orange-dot.png', color: '#ff9800' },
+                    'parking': { url: 'http://maps.google.com/mapfiles/ms/icons/pink-dot.png', color: '#e91e63' },
+                    'canteen': { url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png', color: '#4caf50' },
+                    'mess': { url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png', color: '#4caf50' },
+                    'cafe': { url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png', color: '#4caf50' },
+                    'playground': { url: 'http://maps.google.com/mapfiles/ms/icons/ylw-pushpin.png', color: '#cddc39' },
+                    'gym': { url: 'http://maps.google.com/mapfiles/ms/icons/ylw-pushpin.png', color: '#cddc39' },
+                    'sportscomplex': { url: 'http://maps.google.com/mapfiles/ms/icons/ylw-pushpin.png', color: '#cddc39' }
+                };
+                return icons[type] || { url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', color: '#2196f3' };
+            }
+
+            function getIconForList(type) {
+                const icons = {
+                    'hospital': 'local_hospital',
+                    'pharmacy': 'local_pharmacy',
+                    'clinic': 'medical_services',
+                    'library': 'local_library',
+                    'department': 'business',
+                    'auditorium': 'theaters',
+                    'lab': 'science',
+                    'busstop': 'directions_bus',
+                    'busstand': 'departure_board',
+                    'parking': 'local_parking',
+                    'canteen': 'restaurant',
+                    'mess': 'fastfood',
+                    'cafe': 'local_cafe',
+                    'playground': 'sports_soccer',
+                    'gym': 'fitness_center',
+                    'sportscomplex': 'sports_volleyball'
+                };
+                return icons[type] || 'place';
+            }
+
+            function getFacilitiesByType(type, location) {
+                // This would normally come from a database or API
+                // For demo purposes, we'll generate random nearby facilities
+                const facilities = [];
+                const typeNames = {
+                    'hospital': ['General Hospital', 'Medical Center', 'University Hospital'],
+                    'pharmacy': ['Campus Pharmacy', '24/7 Pharmacy', 'Health Mart'],
+                    'clinic': ['Health Clinic', 'Student Clinic', 'Urgent Care'],
+                    'library': ['Main Library', 'Science Library', 'Central Library'],
+                    'department': ['Computer Science', 'Electrical Engg', 'Mechanical Engg', 'Physics Dept'],
+                    'auditorium': ['Main Auditorium', 'Convocation Hall', 'Event Center'],
+                    'lab': ['Computer Lab', 'Physics Lab', 'Chemistry Lab', 'Research Lab'],
+                    'busstop': ['North Bus Stop', 'South Bus Stop', 'East Bus Stop', 'West Bus Stop'],
+                    'busstand': ['Main Bus Stand', 'Campus Bus Terminal'],
+                    'parking': ['North Parking', 'South Parking', 'Visitor Parking'],
+                    'canteen': ['Main Canteen', 'North Canteen', 'South Canteen'],
+                    'mess': ['Boys Hostel Mess', 'Girls Hostel Mess', 'VIP Mess'],
+                    'cafe': ['Coffee Shop', 'Juice Center', 'Snack Bar'],
+                    'playground': ['Main Ground', 'Sports Field', 'Cricket Ground'],
+                    'gym': ['University Gym', 'Fitness Center', 'Sports Complex Gym'],
+                    'sportscomplex': ['Sports Complex', 'Indoor Stadium', 'Athletic Center']
+                };
+                
+                const descriptions = {
+                    'hospital': '24/7 emergency services available',
+                    'pharmacy': 'Prescription and over-the-counter medications',
+                    'clinic': 'Primary care and vaccinations',
+                    'library': 'Study spaces and book collections',
+                    'department': 'Academic department offices and classrooms',
+                    'auditorium': 'Events and conferences venue',
+                    'lab': 'Research and teaching laboratories',
+                    'busstop': 'Campus shuttle bus stop',
+                    'busstand': 'Main campus bus terminal',
+                    'parking': 'Vehicle parking area',
+                    'canteen': 'Food and refreshments',
+                    'mess': 'Hostel dining facility',
+                    'cafe': 'Coffee and snacks',
+                    'playground': 'Sports and recreational area',
+                    'gym': 'Fitness equipment and training',
+                    'sportscomplex': 'Sports facilities and stadium'
+                };
+                
+                const count = Math.floor(Math.random() * 3) + 2; // 2-4 facilities
+                
+                for (let i = 0; i < count; i++) {
+                    const latOffset = (Math.random() * 0.01) - 0.005;
+                    const lngOffset = (Math.random() * 0.01) - 0.005;
+                    
+                    facilities.push({
+                        name: `${typeNames[type][i % typeNames[type].length]}${i > typeNames[type].length - 1 ? ' ' + (Math.floor(i / typeNames[type].length) + 1) : ''}`,
+                        lat: location.lat + latOffset,
+                        lng: location.lng + lngOffset,
+                        type: type,
+                        description: descriptions[type]
+                    });
+                }
+                
+                return facilities;
+            }
+
+            function findNearbyFacilities(location, type) {
+                if (!location || !type) return;
+                
+                const medicalFacilities = getFacilitiesByType(type, location);
 
                 // Clear old markers if any
                 facilityMarkers.forEach(marker => marker.setMap(null));
@@ -373,32 +742,36 @@
 
                 facilityList.innerHTML = "";
                 facilityList.style.display = "block";
+                directionsRenderer.setMap(null);
+                directionsPanel.style.display = "none";
 
                 medicalFacilities.forEach((facility, idx) => {
                     const facilityLocation = { lat: facility.lat, lng: facility.lng };
+                    const iconInfo = getIconForFacilityType(facility.type);
                     
-                    // Different icons based on facility type
-                    let iconUrl;
-                    switch(facility.type) {
-                        case "hospital":
-                            iconUrl = "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-                            break;
-                        case "pharmacy":
-                            iconUrl = "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
-                            break;
-                        default:
-                            iconUrl = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
-                    }
-
                     const marker = new google.maps.Marker({
                         position: facilityLocation,
                         map: map,
                         title: facility.name,
-                        icon: iconUrl
+                        icon: {
+                            url: iconInfo.url,
+                            scaledSize: new google.maps.Size(32, 32)
+                        }
                     });
 
-                    // Add click listener to show directions
+                    // Add info window
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `
+                            <div style="color: #333; min-width: 200px;">
+                                <h3 style="margin: 0 0 5px 0; color: ${iconInfo.color};">${facility.name}</h3>
+                                <p style="margin: 0 0 5px 0; font-size: 14px;">${facility.description}</p>
+                                <p style="margin: 0; font-size: 12px; color: #666;">${facility.type.charAt(0).toUpperCase() + facility.type.slice(1)}</p>
+                            </div>
+                        `
+                    });
+                    
                     marker.addListener('click', () => {
+                        infoWindow.open(map, marker);
                         showDirections(userLocation, facilityLocation, facility.name);
                     });
 
@@ -417,23 +790,42 @@
                     const item = document.createElement("div");
                     item.className = "facility-item";
                     item.innerHTML = `
-                        <div class="facility-name">${facility.name}</div>
-                        <div class="facility-distance">${distText} away</div>
+                        <div class="facility-icon">
+                            <i class="material-icons">${getIconForList(facility.type)}</i>
+                        </div>
+                        <div class="facility-details">
+                            <div class="facility-name">${facility.name}</div>
+                            <div class="facility-distance">${distText} away • <span class="facility-type">${facility.type}</span></div>
+                        </div>
                     `;
                     item.onclick = () => {
+                        map.panTo(facilityLocation);
+                        map.setZoom(17);
+                        infoWindow.open(map, marker);
                         showDirections(userLocation, facilityLocation, facility.name);
                     };
                     facilityList.appendChild(item);
                 });
 
-                status.textContent = `Found ${medicalFacilities.length} nearby medical facilities.`;
+                // Fit map to show all markers
+                const bounds = new google.maps.LatLngBounds();
+                bounds.extend(userLocation);
+                facilityMarkers.forEach(marker => bounds.extend(marker.getPosition()));
+                map.fitBounds(bounds);
+
+                status.textContent = `Found ${medicalFacilities.length} nearby ${type} facilities.`;
             }
 
             function showDirections(origin, destination, facilityName) {
                 if (!origin || !destination) return;
                 
                 directionsPanel.style.display = "block";
-                directionsPanel.innerHTML = `<h3>Directions to ${facilityName}</h3>`;
+                directionsPanel.innerHTML = `
+                    <h3>
+                        <i class="material-icons">directions_walk</i>
+                        Directions to ${facilityName}
+                    </h3>
+                `;
                 
                 directionsService.route(
                     {
@@ -480,9 +872,10 @@
         };
     </script>
 
-    <!-- Load Google Maps API with your key -->
-    <script async defer
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDN72sJpbCc3JpJBljfOSSLJXEig8MTwEs&callback=initMap&libraries=geometry">
-    </script>
-  </body>
+        <!-- Load Google Maps API with your key -->
+        <script
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDN72sJpbCc3JpJBljfOSSLJXEig8MTwEs&callback=initMap&libraries=geometry"
+            loading="async">
+        </script>
+    </body>
 </html>
