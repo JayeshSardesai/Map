@@ -454,14 +454,13 @@
 
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 20.5937, lng: 78.9629 }, // Default center (India)
-                zoom: 5,
+                center: { lat: 15.8460, lng: 74.4978 }, // Default center (KLS GIT, Belagavi)
+                zoom: 15,
                 disableDefaultUI: true,
                 zoomControl: true,
                 mapTypeControl: true,
                 streetViewControl: false,
                 fullscreenControl: true
-                // Removed the custom map styles to use default light theme
             });
 
             // Initialize directions service and renderer
@@ -540,11 +539,26 @@
                         clearBtn.disabled = false;
                         loadingSpinner.style.display = "none";
                     }, error => {
-                        status.textContent = "Geolocation failed or denied. Using default location.";
+                        let errorMessage;
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage = "Geolocation permission denied. Using KLS Gogte Institute of Technology, Belagavi as default location.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage = "Geolocation unavailable. Using KLS Gogte Institute of Technology, Belagavi as default location.";
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage = "Geolocation request timed out. Using KLS Gogte Institute of Technology, Belagavi as default location.";
+                                break;
+                            default:
+                                errorMessage = "Geolocation error: " + error.message + ". Using KLS Gogte Institute of Technology, Belagavi as default location.";
+                        }
+                        status.textContent = errorMessage;
+                        console.error("Geolocation error:", errorMessage, error);
                         loadingSpinner.style.display = "none";
                         
-                        // Fallback to a default location (example: IIT Bombay)
-                        userLocation = { lat: 19.1334, lng: 72.9133 };
+                        // Fallback to KLS Gogte Institute of Technology, Belagavi
+                        userLocation = { lat: 15.8460, lng: 74.4978 };
                         map.setCenter(userLocation);
                         map.setZoom(16);
                         
@@ -552,7 +566,7 @@
                             userMarker = new google.maps.Marker({
                                 position: userLocation,
                                 map: map,
-                                title: "Default Location",
+                                title: "KLS Gogte Institute of Technology, Belagavi (Default Location)",
                                 icon: {
                                     path: google.maps.SymbolPath.CIRCLE,
                                     scale: 10,
@@ -572,11 +586,11 @@
                         timeout: 10000
                     });
                 } else {
-                    status.textContent = "Geolocation is not supported by this browser. Using default location.";
+                    status.textContent = "Geolocation is not supported by this browser. Using KLS Gogte Institute of Technology, Belagavi as default location.";
                     loadingSpinner.style.display = "none";
                     
-                    // Fallback to a default location
-                    userLocation = { lat: 19.1334, lng: 72.9133 };
+                    // Fallback to KLS Gogte Institute of Technology, Belagavi
+                    userLocation = { lat: 15.8460, lng: 74.4978 };
                     map.setCenter(userLocation);
                     map.setZoom(16);
                     
@@ -584,7 +598,7 @@
                         userMarker = new google.maps.Marker({
                             position: userLocation,
                             map: map,
-                            title: "Default Location",
+                            title: "KLS Gogte Institute of Technology, Belagavi (Default Location)",
                             icon: {
                                 path: google.maps.SymbolPath.CIRCLE,
                                 scale: 10,
