@@ -454,7 +454,7 @@
 
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: 15.8460, lng: 74.4978 }, // Default center (KLS GIT, Belagavi)
+                center: { lat: 15.81468675762362, lng: 74.48780220922636 }, // Default center (KLS GIT, Belagavi)
                 zoom: 15,
                 disableDefaultUI: true,
                 zoomControl: true,
@@ -558,7 +558,7 @@
                         loadingSpinner.style.display = "none";
                         
                         // Fallback to KLS Gogte Institute of Technology, Belagavi
-                        userLocation = { lat: 15.8460, lng: 74.4978 };
+                        userLocation = { lat: 15.81468675762362, lng: 74.48780220922636 };
                         map.setCenter(userLocation);
                         map.setZoom(16);
                         
@@ -590,7 +590,7 @@
                     loadingSpinner.style.display = "none";
                     
                     // Fallback to KLS Gogte Institute of Technology, Belagavi
-                    userLocation = { lat: 15.8460, lng: 74.4978 };
+                    userLocation = { lat: 15.81468675762362, lng: 74.48780220922636 };
                     map.setCenter(userLocation);
                     map.setZoom(16);
                     
@@ -704,7 +704,7 @@
                     'mess': ['Boys Hostel Mess', 'Girls Hostel Mess', 'VIP Mess'],
                     'cafe': ['Coffee Shop', 'Juice Center', 'Snack Bar'],
                     'playground': ['Main Ground', 'Sports Field', 'Cricket Ground'],
-                    'gym': ['University Gym', 'Fitness Center', 'Sports Complex Gym'],
+                    'gym': ['University Gym', 'Fitness Center', 'Sports Complex'],
                     'sportscomplex': ['Sports Complex', 'Indoor Stadium', 'Athletic Center']
                 };
                 
@@ -745,21 +745,21 @@
                 return facilities;
             }
 
-            function findNearbyFacilities(location, type) {
-                if (!location || !type) return;
+            function findNearbyFacilities(location, facilityType) {
+                if (!location || !facilityType) return;
                 
-                const medicalFacilities = getFacilitiesByType(type, location);
+                const facilities = getFacilitiesByType(facilityType, location);
 
-                // Clear old markers if any
+                // Clear old markers
                 facilityMarkers.forEach(marker => marker.setMap(null));
                 facilityMarkers = [];
 
-                facilityList.innerHTML = "";
-                facilityList.style.display = "block";
+                facilityList.innerHTML = '';
+                facilityList.style.display = 'block';
                 directionsRenderer.setMap(null);
-                directionsPanel.style.display = "none";
+                directionsPanel.style.display = 'none';
 
-                medicalFacilities.forEach((facility, idx) => {
+                facilities.forEach((facility, idx) => {
                     const facilityLocation = { lat: facility.lat, lng: facility.lng };
                     const iconInfo = getIconForFacilityType(facility.type);
                     
@@ -780,38 +780,39 @@
                                 <h3 style="margin: 0 0 5px 0; color: ${iconInfo.color};">${facility.name}</h3>
                                 <p style="margin: 0 0 5px 0; font-size: 14px;">${facility.description}</p>
                                 <p style="margin: 0; font-size: 12px; color: #666;">${facility.type.charAt(0).toUpperCase() + facility.type.slice(1)}</p>
-                            </div>
-                        `
+                            </div>`
                     });
                     
-                    marker.addListener('click', () => {
+                    marker.addEventListener('click', () => {
                         infoWindow.open(map, marker);
                         showDirections(userLocation, facilityLocation, facility.name);
                     });
 
                     facilityMarkers.push(marker);
 
-                    // Calculate distance in km from user
-                    const distKm = getDistanceFromLatLonInKm(
-                        location.lat, location.lng, 
-                        facility.lat, facility.lng
+                    // Calculate distance in km
+                    const distKm = getDistanceFromLocationInKm(
+                        location.lat,
+                        location.lng,
+                        facility.lat,
+                        facility.lng
                     );
-                    const distText = distKm < 1 ? 
-                        `${(distKm*1000).toFixed(0)} meters` : 
-                        `${distKm.toFixed(2)} km`;
+
+                    const distText = distKm < 1 ?
+                    `${(distKm * 1000).toFixed(0)} meters` :
+                    `${distKm.toFixed(2)} km`;
 
                     // Add to list
-                    const item = document.createElement("div");
-                    item.className = "facility-item";
+                    const item = document.createElement('div');
+                    item.className = 'facility-item';
                     item.innerHTML = `
-                        <div class="facility-icon">
-                            <i class="material-icons">${getIconForList(facility.type)}</i>
-                        </div>
-                        <div class="facility-details">
-                            <div class="facility-name">${facility.name}</div>
-                            <div class="facility-distance">${distText} away • <span class="facility-type">${facility.type}</span></div>
-                        </div>
-                    `;
+                    <div class="facility-icon">
+                        <i class="material-icons">${getIconForList(facility)}</i>
+                    </div>
+                    <div class="facility-details">
+                        <div class="facility-name">${facility.name}</div>
+                        <div class="facility-distance">${distText} away • <span class="facility-type">${facility.type}</span></div>
+                    </div>`;
                     item.onclick = () => {
                         map.panTo(facilityLocation);
                         map.setZoom(17);
@@ -827,40 +828,37 @@
                 facilityMarkers.forEach(marker => bounds.extend(marker.getPosition()));
                 map.fitBounds(bounds);
 
-                status.textContent = `Found ${medicalFacilities.length} nearby ${type} facilities.`;
+                status.textContent = `Found ${facilities.length} nearby ${facilityType} facilities`;
             }
 
             function showDirections(origin, destination, facilityName) {
                 if (!origin || !destination) return;
-                
-                directionsPanel.style.display = "block";
+
+                directionsPanel.style.display = 'block';
                 directionsPanel.innerHTML = `
-                    <h3>
-                        <i class="material-icons">directions_walk</i>
-                        Directions to ${facilityName}
-                    </h3>
-                `;
-                
+                <h3>
+                    <i class="material-icons">directions_walk</i>
+                    Directions to ${facilityName}
+                </h3>`;
+
                 directionsService.route(
                     {
                         origin: origin,
                         destination: destination,
-                        travelMode: google.maps.TravelMode.WALKING
+                        travelMode: 'WALKING'
                     },
                     (response, status) => {
-                        if (status === "OK") {
+                        if (status === 'OK') {
                             directionsRenderer.setDirections(response);
                             directionsRenderer.setMap(map);
-                            
+
                             // Center map to show both locations
                             const bounds = new google.maps.LatLngBounds();
-                            bounds.extend(origin);
-                            bounds.extend(destination);
-                            map.fitBounds(bounds);
-                            
+                            bounds.extendMap(origin);
+                            bounds.extendMap(destination);
                             status.textContent = `Showing walking directions to ${facilityName}`;
                         } else {
-                            directionsPanel.innerHTML += `<p>Could not get directions: ${status}</p>`;
+                            directionsPanel.innerHTML += `<p>Could not get directions: status}</p>`;
                         }
                     }
                 );
@@ -868,20 +866,20 @@
 
             // Haversine formula to calculate distance between two lat/lng in km
             function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-                const R = 6371; // Radius of earth in km
+                const R = 6371; // Radius of Earth in km
                 const dLat = deg2rad(lat2 - lat1);
                 const dLon = deg2rad(lon2 - lon1);
                 const a = 
-                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
                 const d = R * c;
                 return d;
             }
 
             function deg2rad(deg) {
-                return deg * (Math.PI / 180);
+                return deg * (Math.PI/180);
             }
         };
     </script>
@@ -889,7 +887,6 @@
         <!-- Load Google Maps API with your key -->
         <script
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDN72sJpbCc3JpJBljfOSSLJXEig8MTwEs&callback=initMap&libraries=geometry"
-            loading="async">
-        </script>
+            async></script>
     </body>
 </html>
