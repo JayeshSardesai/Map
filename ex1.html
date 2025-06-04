@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Accurate Location via Geolocation API</title>
+    </head>
+    <body>
+        <h2>Getting Your Accurate Location...</h2>
+        <div id="output">Waiting...</div>
+
+        <script>
+    const output = document.getElementById("output");
+
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          output.innerHTML = `
+            <strong>Accurate Location (via Wi-Fi):</strong><br>
+            Latitude: ${lat}<br>
+            Longitude: ${lon}<br>
+            <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">📍 View on Google Maps</a>
+          `;
+        },
+        (error) => {
+          output.innerHTML = "Geolocation error: " + error.message;
+          console.error(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    } else {
+      output.innerHTML = "Geolocation not supported in this browser.";
+    }
+  </script>
+    </body>
+</html>
